@@ -39,7 +39,9 @@ export class UserController {
   @Get(':userId')
   getOneUser(@Param('userId') userId) {
     return this.userService.getOne(userId);
-  }f
+  }
+
+  f;
 
   // --> POST --> /api/users
   @Post()
@@ -49,8 +51,7 @@ export class UserController {
 
   @Patch(':userId')
   updateUser(@Param('userId') userId: number, @Body() updateUser: any) {
-    console.log(userId);
-    console.log(updateUser);
+    return this.userService.updateMdp(userId, updateUser);
   }
 
   @Delete(':userId')
