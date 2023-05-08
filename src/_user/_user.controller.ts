@@ -8,6 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { UserService } from './_user.service';
+import {UserId} from "../shared/DTO/userId.dto";
+import {User} from "../shared/DTO/user.dto";
 
 @Controller('api/users')
 export class UserController {
@@ -31,13 +33,13 @@ export class UserController {
 
   // --> GET --> /api/users
   @Get()
-  getAllUsers(): Promise<any[]> {
+  getAllUsers(): Promise<User[]> {
     return this.userService.getAll();
   }
 
   // --> GET --> /api/users/:userId
   @Get(':userId')
-  getOneUser(@Param('userId') userId): Promise<any> {
+  getOneUser(@Param('userId') userId): Promise<User> {
     return this.userService.getOne(userId);
   }
 
@@ -45,7 +47,7 @@ export class UserController {
 
   // --> POST --> /api/users
   @Post()
-  createUser(@Body() newUser: any): Promise<{ userId: number }> {
+  createUser(@Body() newUser: any): Promise<UserId> {
     return this.userService.create(newUser);
   }
 
@@ -53,12 +55,12 @@ export class UserController {
   updateUser(
     @Param('userId') userId: number,
     @Body() updateUser: any,
-  ): Promise<{ userId: number }> {
+  ): Promise<UserId> {
     return this.userService.updateMdp(userId, updateUser);
   }
 
   @Delete(':userId')
-  disableUser(@Param('userId') userId: number): Promise<{ userId: number }> {
+  disableUser(@Param('userId') userId: number): Promise<UserId> {
     return this.userService.disable(userId);
   }
 }
