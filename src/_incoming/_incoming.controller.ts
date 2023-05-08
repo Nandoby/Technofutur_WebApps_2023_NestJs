@@ -6,7 +6,7 @@ export class IncomingController {
   constructor(private readonly incomingService: IncomingService) {}
 
   @Get()
-  getAllAnimals() {
+  getAllAnimals(): Promise<any[]> {
     return this.incomingService.getAllAnimals();
   }
 

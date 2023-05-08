@@ -6,7 +6,7 @@ export class SpecieController {
   constructor(private readonly incomingService: IncomingService) {}
 
   @Get(':specie')
-  getAllBySpecie(@Param() specie: string) {
+  getAllBySpecie(@Param('specie') specie: string) {
     return this.incomingService.getAllBySpecie(specie);
   }
 }

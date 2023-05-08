@@ -6,12 +6,12 @@ export class AnimalController {
   constructor(private readonly incomingService: IncomingService) {}
 
   @Patch(':animalId')
-  reviveAnimal(@Param() animalId: number) {
+  reviveAnimal(@Param('animalId') animalId: number): Promise<any> {
     return this.incomingService.reviveAnimal(animalId);
   }
 
   @Delete(':animalId')
-  dieAnimal(@Param() animalId: number) {
+  dieAnimal(@Param('animalId') animalId: number): Promise<any> {
     return this.incomingService.dieAnimal(animalId);
   }
 }
