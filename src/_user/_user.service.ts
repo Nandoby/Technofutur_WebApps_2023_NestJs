@@ -20,7 +20,7 @@ export class UserService {
     return this.users;
   }
 
-  async getOne(userId: UserId): Promise<User | undefined> {
+  async getOne(userId: UserId): Promise<User> {
     const userFoundShort = this.users.find((user) => user.id == userId);
 
     // let userFoundLong = this.users.find((user) => {
