@@ -12,11 +12,11 @@ export class UserService {
     { id: 7, login: 'Meroine', mdp: 'Test1234', active: true },
   ];
 
-  async getAll() {
+  async getAll(): Promise<any[]> {
     return this.users;
   }
 
-  async getOne(userId: number) {
+  async getOne(userId: number): Promise<any | undefined> {
     const userFoundShort = this.users.find((user) => user.id == userId);
 
     // let userFoundLong = this.users.find((user) => {
@@ -29,13 +29,13 @@ export class UserService {
     return userFoundShort;
   }
 
-  async create(newUser: any) {
+  async create(newUser: any): Promise<{ userId: number }> {
     const totalUser = this.users.length;
     const newId = totalUser + 1;
 
     if (newUser.login != undefined && newUser.mdp != undefined) {
       this.users.push({ id: newId, ...newUser });
-      return newId;
+      return { userId: newId };
     } else {
       throw new HttpException(
         'Erreur : Nombre de paramètre body incorrect',
@@ -44,7 +44,7 @@ export class UserService {
     }
   }
 
-  async updateMdp(userId: number, newMdp: any) {
+  async updateMdp(userId: number, newMdp: any): Promise<{ userId: number }> {
     if (newMdp.mdp == undefined)
       throw new HttpException(
         'Erreur: Nombre de paramètre body incorrect',
@@ -61,7 +61,7 @@ export class UserService {
     }
   }
 
-  async disable(userId: number) {
+  async disable(userId: number): Promise<{ userId: number }> {
     const userIndexFound = this.users.findIndex((user) => user.id == userId);
 
     if (userIndexFound != -1) {

@@ -31,13 +31,13 @@ export class UserController {
 
   // --> GET --> /api/users
   @Get()
-  getAllUsers() {
+  getAllUsers(): Promise<any[]> {
     return this.userService.getAll();
   }
 
   // --> GET --> /api/users/:userId
   @Get(':userId')
-  getOneUser(@Param('userId') userId) {
+  getOneUser(@Param('userId') userId): Promise<any> {
     return this.userService.getOne(userId);
   }
 
@@ -45,17 +45,20 @@ export class UserController {
 
   // --> POST --> /api/users
   @Post()
-  createUser(@Body() newUser: any) {
+  createUser(@Body() newUser: any): Promise<{ userId: number }> {
     return this.userService.create(newUser);
   }
 
   @Patch(':userId')
-  updateUser(@Param('userId') userId: number, @Body() updateUser: any) {
+  updateUser(
+    @Param('userId') userId: number,
+    @Body() updateUser: any,
+  ): Promise<{ userId: number }> {
     return this.userService.updateMdp(userId, updateUser);
   }
 
   @Delete(':userId')
-  disableUser(@Param('userId') userId: number) {
-    console.log(userId);
+  disableUser(@Param('userId') userId: number): Promise<{ userId: number }> {
+    return this.userService.disable(userId);
   }
 }
