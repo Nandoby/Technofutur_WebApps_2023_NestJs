@@ -10,6 +10,8 @@ import {
 import { UserService } from './_user.service';
 import {UserId} from "../shared/DTO/userId.dto";
 import {User} from "../shared/DTO/user.dto";
+import {NewUser} from "../shared/DTO/newUser.dto";
+import {UpdateUserMdp} from "../shared/DTO/updateUserMdp.dto";
 
 @Controller('api/users')
 export class UserController {
@@ -47,14 +49,14 @@ export class UserController {
 
   // --> POST --> /api/users
   @Post()
-  createUser(@Body() newUser: any): Promise<UserId> {
+  createUser(@Body() newUser: NewUser): Promise<UserId> {
     return this.userService.create(newUser);
   }
 
   @Patch(':userId')
   updateUser(
     @Param('userId') userId: number,
-    @Body() updateUser: any,
+    @Body() updateUser: UpdateUserMdp,
   ): Promise<UserId> {
     return this.userService.updateMdp(userId, updateUser);
   }

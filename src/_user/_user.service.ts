@@ -58,7 +58,7 @@ export class UserService {
 
     if (userIndexFound != -1) {
       if (this.users[userIndexFound].active == true) {
-        this.users[userIndexFound].active == false;
+        this.users[userIndexFound].active = false;
         return this.users[userIndexFound].id;
       } else {
         throw new HttpException(
