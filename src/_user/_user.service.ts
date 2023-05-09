@@ -1,11 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { User } from '../shared/DTO/user.dto';
 import { UserId } from '../shared/DTO/userId.dto';
 import { NewUser } from '../shared/DTO/newUser.dto';
 import { UpdateUserMdp } from '../shared/DTO/updateUserMdp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../shared/entities/user.entity';
-import { Repository } from 'typeorm';
+import { InsertResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -48,44 +53,54 @@ export class UserService {
     return oneUser;
   }
 
-  async create(newUser: NewUser): Promise<UserId> {
-    newUser.active = true;
+  async create(newUser: NewUser): Promise<UserId | User> {
+    const userEntityCreated = this.usersRepository.create({ ...newUser });
 
-    let userCreated = this.usersRepository.create();
-    userCreated.active = true;
-    userCreated = { ...newUser };
+    const resultInsert: InsertResult = await this.usersRepository
+      .insert(userEntityCreated)
+      .catch(() => {
+        throw new InternalServerErrorException('Error on insert user in sql');
+      });
 
-    this.users.push({ ...newUser });
-
-    return newUser.id;
+    console.log(resultInsert);
+    return resultInsert.identifiers[0].id;
   }
 
   async updateMdp(userId: UserId, newMdp: UpdateUserMdp): Promise<UserId> {
-    const userIndexFound = this.users.findIndex((user) => user.id == userId);
+    const userExist = await this.usersRepository
+      .findOneOrFail({
+        where: { id: userId },
+      })
+      .catch(() => {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      });
 
-    if (userIndexFound != -1) {
-      this.users[userIndexFound].mdp = newMdp.mdp;
-      return this.users[userIndexFound].id;
-    } else {
-      throw new HttpException('Erreur: User not found', HttpStatus.NOT_FOUND);
-    }
+    userExist.mdp = newMdp.mdp;
+    const userSaved = await this.usersRepository.save(userExist).catch(() => {
+      throw new InternalServerErrorException('Error on save user in sql');
+    });
+
+    const id: UserId = userSaved.id;
+
+    return id;
   }
 
   async disable(userId: UserId): Promise<UserId> {
-    const userIndexFound = this.users.findIndex((user) => user.id == userId);
+    const userExist = await this.usersRepository
+      .findOneOrFail({ where: { id: userId } })
+      .catch(() => {
+        throw new InternalServerErrorException('Error on save user in sql');
+      });
 
-    if (userIndexFound != -1) {
-      if (this.users[userIndexFound].active == true) {
-        this.users[userIndexFound].active = false;
-        return this.users[userIndexFound].id;
-      } else {
-        throw new HttpException(
-          'Erreur: User already desactivated',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    } else {
-      throw new HttpException('Erreur: User not found', HttpStatus.NOT_FOUND);
-    }
+    userExist.active = false;
+    const userSaved: UpdateResult = await this.usersRepository
+      .update(userId, userExist)
+      .catch(() => {
+        throw new InternalServerErrorException('Error on save user in sql');
+      });
+
+    console.log(userSaved);
+
+    if (userSaved.affected == 1) return userExist.id;
   }
 }
