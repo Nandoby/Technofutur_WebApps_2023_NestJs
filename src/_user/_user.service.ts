@@ -3,6 +3,9 @@ import { User } from '../shared/DTO/user.dto';
 import { UserId } from '../shared/DTO/userId.dto';
 import { NewUser } from '../shared/DTO/newUser.dto';
 import { UpdateUserMdp } from '../shared/DTO/updateUserMdp.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../shared/entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -16,13 +19,16 @@ export class UserService {
     { id: 7, login: 'Meroine', mdp: 'Test1234', active: true },
   ];
 
+  constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
+  ) {}
+
   async getAll(): Promise<User[]> {
-    return this.users;
+    return await this.usersRepository.find();
   }
 
   async getOne(userId: UserId): Promise<User> {
-    const userFoundShort = this.users.find((user) => user.id == userId);
-
     // let userFoundLong = this.users.find((user) => {
     //   if (user.id == userId) return user;
     //   else return undefined;
@@ -30,12 +36,24 @@ export class UserService {
 
     // console.log(userFoundLong)
     // console.log(userFoundShort)
-    return userFoundShort;
+
+    const oneUser = await this.usersRepository
+      .findOneByOrFail({
+        active: true,
+        id: userId,
+      })
+      .catch(() => {
+        throw new HttpException('VIDE', HttpStatus.NOT_FOUND);
+      });
+    return oneUser;
   }
 
   async create(newUser: NewUser): Promise<UserId> {
-    newUser.id = this.users.length + 1;
     newUser.active = true;
+
+    let userCreated = this.usersRepository.create();
+    userCreated.active = true;
+    userCreated = { ...newUser };
 
     this.users.push({ ...newUser });
 

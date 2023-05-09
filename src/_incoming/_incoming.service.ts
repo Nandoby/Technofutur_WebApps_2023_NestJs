@@ -126,7 +126,7 @@ export class IncomingService {
     return this.animals[indexAnimal];
   }
 
-  async reviveAnimal(animalId: number) {
+  async reviveAnimal(animalId: number): Promise<any> {
     await this.verifyAnimalId(animalId);
 
     const indexAnimal: number = this.animals.findIndex(
