@@ -8,10 +8,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { UserService } from './_user.service';
-import { UserId } from '../shared/DTO/userId.dto';
-import { User } from '../shared/DTO/user.dto';
-import { NewUser } from '../shared/DTO/newUser.dto';
-import { UpdateUserMdp } from '../shared/DTO/updateUserMdp.dto';
+import { UserId } from '../shared/DTO/users/userId.dto';
+import { User } from '../shared/DTO/users/user.dto';
+import { NewUser } from '../shared/DTO/users/newUser.dto';
+import { UpdateUserMdp } from '../shared/DTO/users/updateUserMdp.dto';
 
 @Controller('api/users')
 export class UserController {

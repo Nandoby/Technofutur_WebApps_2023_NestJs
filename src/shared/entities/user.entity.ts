@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserDonationEntity } from './userDonation.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -13,4 +20,10 @@ export class UserEntity {
 
   @Column({ default: true })
   active: boolean;
+
+  @OneToMany(() => UserDonationEntity, (donation) => donation.user, {
+    cascade: ['insert', 'update'],
+  })
+  @JoinColumn()
+  donation: UserDonationEntity[];
 }

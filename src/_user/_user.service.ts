@@ -4,10 +4,10 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { User } from '../shared/DTO/user.dto';
-import { UserId } from '../shared/DTO/userId.dto';
-import { NewUser } from '../shared/DTO/newUser.dto';
-import { UpdateUserMdp } from '../shared/DTO/updateUserMdp.dto';
+import { User } from '../shared/DTO/users/user.dto';
+import { UserId } from '../shared/DTO/users/userId.dto';
+import { NewUser } from '../shared/DTO/users/newUser.dto';
+import { UpdateUserMdp } from '../shared/DTO/users/updateUserMdp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../shared/entities/user.entity';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
