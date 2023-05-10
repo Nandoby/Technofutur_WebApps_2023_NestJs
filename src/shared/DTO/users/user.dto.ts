@@ -1,4 +1,5 @@
 import { IsDefined } from 'class-validator';
+import { UserDonation } from '../donations/userDonation.dto';
 
 export class User {
   @IsDefined()
@@ -12,4 +13,9 @@ export class User {
 
   @IsDefined()
   active: boolean;
+
+  /**
+   * Part Relational Entities
+   */
+  donation: UserDonation[];
 }

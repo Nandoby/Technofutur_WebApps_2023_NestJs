@@ -5,5 +5,9 @@ export class UserDonation {
   type: string;
   qty_in_kg: number;
   expiration_date: string;
+
+  /**
+   * Part Relational Entities
+   */
   user: User;
 }

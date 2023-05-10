@@ -12,19 +12,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../shared/entities/user.entity';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { UserDonationEntity } from 'src/shared/entities/userDonation.entity';
+import { UserDonation } from 'src/shared/DTO/donations/userDonation.dto';
+import { NewUserDonation } from 'src/shared/DTO/donations/newUserDonation.dto';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [
-    { id: 1, login: 'Sébastien', mdp: 'Test1234', active: true },
-    { id: 2, login: 'Aymeric', mdp: 'Test1234', active: true },
-    { id: 3, login: 'Amandine', mdp: 'Test1234', active: true },
-    { id: 4, login: 'Rémy', mdp: 'Test1234', active: true },
-    { id: 5, login: 'Ferdinando', mdp: 'Test1234', active: true },
-    { id: 6, login: 'Nicolas', mdp: 'Test1234', active: true },
-    { id: 7, login: 'Meroine', mdp: 'Test1234', active: true },
-  ];
-
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
@@ -105,5 +97,55 @@ export class UserService {
     console.log(userSaved);
 
     if (userSaved.affected == 1) return userExist.id;
+  }
+
+  /*
+   * Part Relational Entities
+   */
+
+  async getAllDonation(): Promise<UserDonation[]> {
+    // si on part de donation controller -< on aura a faire get all donation join user
+    const datas = await this.userDonationRepository.find({
+      select: { type: true, qty_in_kg: true, user: { login: true } },
+      relations: { user: true },
+      //where : { user : { active : true } }
+    });
+
+    //si on part de user controller -> on aura à faire get all user join donation
+    /*let datas = await this.usersRepo.find({
+            select : { donation : { type : true}, login : true},
+            relations : { donation : true}
+        })
+        console.log(datas)*/
+
+    //pour l'exemple nous verrons les deux facon
+    return datas;
+  }
+
+  async getDonationByUserId(userId: UserId): Promise<UserDonation[]> {
+    const datas = await this.userDonationRepository.find({
+      where: { user: { id: userId } },
+    });
+
+    return datas;
+  }
+
+  async addDonationByUser(userId: UserId, newUserDonation: NewUserDonation) {
+    const user: UserEntity = await this.usersRepository
+      .findOneOrFail({
+        where: { active: true, id: userId },
+        relations: { donation: true },
+      })
+      .catch(() => {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      });
+
+    let newDonation = this.userDonationRepository.create(newUserDonation);
+    newDonation = await this.userDonationRepository.save(newDonation);
+
+    user.donation.push(newDonation);
+    const returnCreateDonationUser = await this.usersRepository.save(user)
+
+    return returnCreateDonationUser;
   }
 }
