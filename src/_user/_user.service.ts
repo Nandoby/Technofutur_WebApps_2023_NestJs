@@ -11,6 +11,7 @@ import { UpdateUserMdp } from '../shared/DTO/users/updateUserMdp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../shared/entities/user.entity';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
+import { UserDonationEntity } from 'src/shared/entities/userDonation.entity';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,8 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(UserDonationEntity)
+    private userDonationRepository: Repository<UserDonationEntity>,
   ) {}
 
   async getAll(): Promise<User[]> {
