@@ -144,7 +144,7 @@ export class UserService {
     newDonation = await this.userDonationRepository.save(newDonation);
 
     user.donation.push(newDonation);
-    const returnCreateDonationUser = await this.usersRepository.save(user)
+    const returnCreateDonationUser = await this.usersRepository.save(user);
 
     return returnCreateDonationUser;
   }

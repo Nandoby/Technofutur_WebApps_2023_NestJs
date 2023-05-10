@@ -2,7 +2,6 @@ import { IsDefined } from 'class-validator';
 import { User } from '../users/user.dto';
 
 export class NewUserDonation {
-
   @IsDefined()
   type: string;
 
