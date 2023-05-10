@@ -37,7 +37,7 @@ export class UserService {
     // console.log(userFoundLong)
     // console.log(userFoundShort)
 
-    const oneUser = await this.usersRepository
+    return await this.usersRepository
       .findOneByOrFail({
         active: true,
         id: userId,
@@ -45,7 +45,6 @@ export class UserService {
       .catch(() => {
         throw new HttpException('VIDE', HttpStatus.NOT_FOUND);
       });
-    return oneUser;
   }
 
   async create(newUser: NewUser): Promise<UserId | User> {
@@ -75,9 +74,7 @@ export class UserService {
       throw new InternalServerErrorException('Error on save user in sql');
     });
 
-    const id: UserId = userSaved.id;
-
-    return id;
+    return userSaved.id;
   }
 
   async disable(userId: UserId): Promise<UserId> {
@@ -105,12 +102,6 @@ export class UserService {
 
   async getAllDonation(): Promise<UserDonation[]> {
     // si on part de donation controller -< on aura a faire get all donation join user
-    const datas = await this.userDonationRepository.find({
-      select: { type: true, qty_in_kg: true, user: { login: true } },
-      relations: { user: true },
-      //where : { user : { active : true } }
-    });
-
     //si on part de user controller -> on aura à faire get all user join donation
     /*let datas = await this.usersRepo.find({
             select : { donation : { type : true}, login : true},
@@ -119,15 +110,17 @@ export class UserService {
         console.log(datas)*/
 
     //pour l'exemple nous verrons les deux facon
-    return datas;
+    return await this.userDonationRepository.find({
+      select: { type: true, qty_in_kg: true, user: { login: true } },
+      relations: { user: true },
+      //where : { user : { active : true } }
+    });
   }
 
   async getDonationByUserId(userId: UserId): Promise<UserDonation[]> {
-    const datas = await this.userDonationRepository.find({
+    return await this.userDonationRepository.find({
       where: { user: { id: userId } },
     });
-
-    return datas;
   }
 
   async addDonationByUser(userId: UserId, newUserDonation: NewUserDonation) {
@@ -144,8 +137,6 @@ export class UserService {
     newDonation = await this.userDonationRepository.save(newDonation);
 
     user.donation.push(newDonation);
-    const returnCreateDonationUser = await this.usersRepository.save(user);
-
-    return returnCreateDonationUser;
+    return await this.usersRepository.save(user);
   }
 }
